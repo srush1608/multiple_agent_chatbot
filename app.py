@@ -5,11 +5,14 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    """Render the main page."""
     return render_template('index.html')
 
 @app.route('/generate', methods=['POST'])
 def generate():
-    topic = request.form.get('topic', '')
+    """Handle the generation of blog content."""
+    data = request.json
+    topic = data.get('topic', '')
 
     if not topic:
         return jsonify({"error": "Please provide a valid topic."}), 400
@@ -17,14 +20,17 @@ def generate():
     try:
         # Generate outline
         outline = generate_outline(topic)
+        print(f"Generated outline: {outline}")
 
         # Fill content
         content = fill_content(outline)
+        print(f"Filled content: {content}")
 
         # Format content
         formatted_content = format_content(content)
+        print(f"Formatted content: {formatted_content}")
 
-        # Return response
+        # Return formatted content as response
         return jsonify({
             "outline": outline,
             "content": content,

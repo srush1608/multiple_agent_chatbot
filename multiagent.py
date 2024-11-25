@@ -1,5 +1,6 @@
 from langchain.prompts import PromptTemplate
 from langchain_groq import ChatGroq
+from langchain.schema import AIMessage
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +19,9 @@ def generate_outline(topic: str) -> str:
     outline_prompt = PromptTemplate(input_variables=["topic"], template=outline_template)
     outline_chain = outline_prompt | llm
     outline = outline_chain.invoke({"topic": topic})
-    return outline
+    
+    # Ensure the outline is a string
+    return str(outline) if isinstance(outline, AIMessage) else outline
 
 def fill_content(outline: str) -> str:
     content_filler_template = """
@@ -30,7 +33,9 @@ def fill_content(outline: str) -> str:
     content_filler_prompt = PromptTemplate(input_variables=["outline"], template=content_filler_template)
     content_filler_chain = content_filler_prompt | llm
     content = content_filler_chain.invoke({"outline": outline})
-    return content
+    
+    # Ensure the content is a string
+    return str(content) if isinstance(content, AIMessage) else content
 
 def format_content(content: str) -> str:
     content_formatter_template = """
@@ -42,9 +47,12 @@ def format_content(content: str) -> str:
     content_formatter_prompt = PromptTemplate(input_variables=["content"], template=content_formatter_template)
     content_formatter_chain = content_formatter_prompt | llm
     formatted_content = content_formatter_chain.invoke({"content": content})
-    return formatted_content
+    
+    # Ensure the formatted content is a string
+    return str(formatted_content) if isinstance(formatted_content, AIMessage) else formatted_content
 
-topic = "The Impact of Artificial Intelligence on Society"
+# topic = "The Impact of Artificial Intelligence on Society"
+topic = ""
 
 outline = generate_outline(topic)
 print("Outline Generated:")
